@@ -35,8 +35,12 @@ require('lazy').setup({
   'sindrets/diffview.nvim',
   'tpope/vim-fugitive',
   'tpope/vim-rhubarb',
-  { "catppuccin/nvim",
-    name = "catppuccin", priority = 1000 },
+  'ellisonleao/gruvbox.nvim',
+  {
+    "catppuccin/nvim",
+    name = "catppuccin",
+    priority = 1000
+  },
   {
     "baliestri/aura-theme",
     lazy = false,
@@ -46,7 +50,7 @@ require('lazy').setup({
       vim.cmd([[colorscheme aura-dark]])
     end
   },
-  { "bluz71/vim-moonfly-colors", name = "moonfly",    lazy = false,   priority = 1000 },
+  { "bluz71/vim-moonfly-colors", name = "moonfly",  lazy = false, priority = 1000 },
   { 'rose-pine/neovim',          name = 'rose-pine' },
   -- Detect tabstop and shiftwidth automatically
   'tpope/vim-sleuth',
@@ -108,7 +112,7 @@ require('lazy').setup({
       on_attach = function(bufnr)
         vim.keymap.set('n', '<leader>hp', require('gitsigns').preview_hunk, { buffer = bufnr, desc = 'Preview git hunk' })
 
-     -- don't override the built-in and fugitive keymaps
+        -- don't override the built-in and fugitive keymaps
         local gs = package.loaded.gitsigns
         vim.keymap.set({ 'n', 'v' }, ']c', function()
           if vim.wo.diff then
@@ -619,60 +623,60 @@ cmp.setup {
 }
 
 require("catppuccin").setup({
-    flavour = "frappe", -- latte, frappe, macchiato, mocha
-    background = { -- :h background
-        light = "latte",
-        dark = "mocha",
+  flavour = "frappe",   -- latte, frappe, macchiato, mocha
+  background = {        -- :h background
+    light = "latte",
+    dark = "mocha",
+  },
+  transparent_background = false,   -- disables setting the background color.
+  show_end_of_buffer = false,       -- shows the '~' characters after the end of buffers
+  term_colors = false,              -- sets terminal colors (e.g. `g:terminal_color_0`)
+  dim_inactive = {
+    enabled = false,                -- dims the background color of inactive window
+    shade = "dark",
+    percentage = 0.15,              -- percentage of the shade to apply to the inactive window
+  },
+  no_italic = false,                -- Force no italic
+  no_bold = false,                  -- Force no bold
+  no_underline = false,             -- Force no underline
+  styles = {                        -- Handles the styles of general hi groups (see `:h highlight-args`):
+    comments = { "italic" },        -- Change the style of comments
+    conditionals = { "italic" },
+    loops = {},
+    functions = {},
+    keywords = {},
+    strings = {},
+    variables = {},
+    numbers = {},
+    booleans = {},
+    properties = {},
+    types = {},
+    operators = {},
+  },
+  color_overrides = {},
+  custom_highlights = {},
+  integrations = {
+    cmp = true,
+    gitsigns = true,
+    nvimtree = true,
+    treesitter = true,
+    notify = false,
+    mini = {
+      enabled = true,
+      indentscope_color = "",
     },
-    transparent_background = false, -- disables setting the background color.
-    show_end_of_buffer = false, -- shows the '~' characters after the end of buffers
-    term_colors = false, -- sets terminal colors (e.g. `g:terminal_color_0`)
-    dim_inactive = {
-        enabled = false, -- dims the background color of inactive window
-        shade = "dark",
-        percentage = 0.15, -- percentage of the shade to apply to the inactive window
-    },
-    no_italic = false, -- Force no italic
-    no_bold = false, -- Force no bold
-    no_underline = false, -- Force no underline
-    styles = { -- Handles the styles of general hi groups (see `:h highlight-args`):
-        comments = { "italic" }, -- Change the style of comments
-        conditionals = { "italic" },
-        loops = {},
-        functions = {},
-        keywords = {},
-        strings = {},
-        variables = {},
-        numbers = {},
-        booleans = {},
-        properties = {},
-        types = {},
-        operators = {},
-    },
-    color_overrides = {},
-    custom_highlights = {},
-    integrations = {
-        cmp = true,
-        gitsigns = true,
-        nvimtree = true,
-        treesitter = true,
-        notify = false,
-        mini = {
-            enabled = true,
-            indentscope_color = "",
-        },
-        -- For more plugins integrations please scroll down (https://github.com/catppuccin/nvim#integrations)
-    },
+    -- For more plugins integrations please scroll down (https://github.com/catppuccin/nvim#integrations)
+  },
 })
 
 -- setup must be called before loading
 --vim.cmd.colorscheme "catppuccin"
 function ColorMyPencils(color)
-  color = color or "catppuccin"
+  color = color or "moonfly"
   vim.cmd.colorscheme(color)
 
- vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
- vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
+  vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
+  vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
 end
 
 ColorMyPencils()
