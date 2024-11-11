@@ -50,8 +50,55 @@ require('lazy').setup({
       vim.cmd([[colorscheme aura-dark]])
     end
   },
-  { "bluz71/vim-moonfly-colors", name = "moonfly",  lazy = false, priority = 1000 },
-  { 'rose-pine/neovim',          name = 'rose-pine' },
+  { "bluz71/vim-moonfly-colors",   name = "moonfly",     lazy = false, priority = 1000 },
+  {
+    'rose-pine/neovim',
+  },
+  {
+    "fatih/vim-go",
+    ft = "go",
+    config = function()
+      -- Auto import on save
+      vim.g.go_fmt_command = "goimports"
+
+      -- Key mappings for imports
+      vim.keymap.set('n', '<leader>gi', ':GoImport<Space>', { silent = true })
+      vim.keymap.set('n', '<leader>gI', ':GoImportAs<Space>', { silent = true })
+      vim.keymap.set('n', '<leader>ga', ':GoImports<CR>', { silent = true })
+    end,
+  },
+  {
+    "neovim/nvim-lspconfig",
+    config = function()
+      require('lspconfig').gopls.setup({
+        settings = {
+          gopls = {
+            analyses = {
+              unusedparams = true,
+            },
+            staticcheck = true,
+            usePlaceholders = true,
+            completeUnimported = true,
+          },
+        },
+        on_attach = function(client, bufnr)
+          -- Import on save
+          vim.api.nvim_create_autocmd("BufWritePre", {
+            pattern = "*.go",
+            callback = function()
+              vim.lsp.buf.format()
+            end,
+          })
+
+          -- Key mappings for code actions (including imports)
+          vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, { buffer = bufnr })
+          vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, { buffer = bufnr })
+          vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, { buffer = bufnr })
+        end,
+      })
+    end,
+  },
+  { 'projekt0n/github-nvim-theme', name = 'github-theme' },
   -- Detect tabstop and shiftwidth automatically
   'tpope/vim-sleuth',
   {
@@ -94,7 +141,54 @@ require('lazy').setup({
       'rafamadriz/friendly-snippets',
     },
   },
+  {
+    "nvim-tree/nvim-tree.lua",
+    dependencies = {
+      "nvim-tree/nvim-web-devicons", -- Optional, for file icons
+    },
+    config = function()
+      -- Disable netrw (vim's built-in file explorer)
+      vim.g.loaded_netrw = 1
+      vim.g.loaded_netrwPlugin = 1
 
+      require("nvim-tree").setup({
+        sort_by = "case_sensitive",
+        view = {
+          width = 30,
+        },
+        renderer = {
+          group_empty = true,
+          icons = {
+            show = {
+              file = true,
+              folder = true,
+              folder_arrow = true,
+              git = true,
+            },
+          },
+        },
+        filters = {
+          dotfiles = false,
+        },
+        git = {
+          enable = true,
+          ignore = false,
+        },
+        actions = {
+          open_file = {
+            quit_on_open = false,
+            window_picker = {
+              enable = true,
+            },
+          },
+        },
+      })
+
+      -- Key mappings
+      vim.keymap.set('n', '<leader>e', ':NvimTreeToggle<CR>', { silent = true })
+      vim.keymap.set('n', '<leader>f', ':NvimTreeFocus<CR>', { silent = true })
+    end,
+  },
   -- Useful plugin to show you pending keybinds.
   { 'folke/which-key.nvim',  opts = {} },
   {
@@ -253,7 +347,23 @@ require('lazy').setup({
 -- [[ Setting options ]]
 -- See `:help vim.o`
 -- NOTE: You can change these options as you wish!
+-- Multiple ways to toggle the file explorer
+vim.keymap.set('n', '<C-n>', ':NvimTreeToggle<CR>', { silent = true })     -- Toggle with Ctrl+n
+vim.keymap.set('n', '<C-b>', ':NvimTreeToggle<CR>', { silent = true })     -- Toggle with Ctrl+b (VS Code style)
+vim.keymap.set('n', '<leader>e', ':NvimTreeToggle<CR>', { silent = true }) -- Toggle with leader+e
 
+-- Additional useful commands
+vim.keymap.set('n', '<leader>f', ':NvimTreeFocus<CR>', { silent = true })    -- Focus the explorer
+vim.keymap.set('n', '<leader>F', ':NvimTreeFindFile<CR>', { silent = true }) -- Find current file in explorer
+
+-- To close when opening files
+require("nvim-tree").setup({
+  actions = {
+    open_file = {
+      quit_on_open = true -- Automatically close when opening files
+    },
+  },
+})
 -- Set highlight on search
 vim.o.hlsearch = false
 
@@ -623,24 +733,24 @@ cmp.setup {
 }
 
 require("catppuccin").setup({
-  flavour = "frappe",   -- latte, frappe, macchiato, mocha
-  background = {        -- :h background
+  flavour = "frappe", -- latte, frappe, macchiato, mocha
+  background = {      -- :h background
     light = "latte",
     dark = "mocha",
   },
-  transparent_background = false,   -- disables setting the background color.
-  show_end_of_buffer = false,       -- shows the '~' characters after the end of buffers
-  term_colors = false,              -- sets terminal colors (e.g. `g:terminal_color_0`)
+  transparent_background = false, -- disables setting the background color.
+  show_end_of_buffer = false,     -- shows the '~' characters after the end of buffers
+  term_colors = false,            -- sets terminal colors (e.g. `g:terminal_color_0`)
   dim_inactive = {
-    enabled = false,                -- dims the background color of inactive window
+    enabled = false,              -- dims the background color of inactive window
     shade = "dark",
-    percentage = 0.15,              -- percentage of the shade to apply to the inactive window
+    percentage = 0.15,            -- percentage of the shade to apply to the inactive window
   },
-  no_italic = false,                -- Force no italic
-  no_bold = false,                  -- Force no bold
-  no_underline = false,             -- Force no underline
-  styles = {                        -- Handles the styles of general hi groups (see `:h highlight-args`):
-    comments = { "italic" },        -- Change the style of comments
+  no_italic = false,              -- Force no italic
+  no_bold = false,                -- Force no bold
+  no_underline = false,           -- Force no underline
+  styles = {                      -- Handles the styles of general hi groups (see `:h highlight-args`):
+    comments = { "italic" },      -- Change the style of comments
     conditionals = { "italic" },
     loops = {},
     functions = {},
@@ -672,7 +782,7 @@ require("catppuccin").setup({
 -- setup must be called before loading
 --vim.cmd.colorscheme "catppuccin"
 function ColorMyPencils(color)
-  color = color or "moonfly"
+  color = color or "github_dark_default"
   vim.cmd.colorscheme(color)
 
   vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
